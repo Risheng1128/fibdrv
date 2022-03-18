@@ -3,6 +3,7 @@ TARGET_MODULE := fibdrv
 
 obj-m := $(TARGET_MODULE).o
 ccflags-y := -std=gnu99 -Wno-declaration-after-statement
+$(TARGET_MODULE)-objs := fibdrv_core.o bignumber.o
 
 KDIR := /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
@@ -37,5 +38,5 @@ check: all
 	$(MAKE) load
 	sudo ./client > out
 	$(MAKE) unload
-	@diff -u out scripts/expected.txt && $(call pass)
+	@diff -u out scripts/fibnacci500.txt && $(call pass)
 	@scripts/verify.py
