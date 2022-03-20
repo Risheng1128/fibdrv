@@ -4,6 +4,7 @@
 #include <linux/init.h>
 #include <linux/kdev_t.h>
 #include <linux/kernel.h>
+#include <linux/ktime.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
 #include <linux/uaccess.h>
@@ -43,7 +44,7 @@ static long int fib_sequence(long int k, char *buf)
         str_cpy(fn, kbuf, str_size(kbuf));
     }
     long int res_size = str_size(fn);
-    copy_to_user(buf, fn, res_size + 1);
+    copy_to_user(buf, kbuf, res_size + 1);
     return res_size;
 }
 
@@ -62,13 +63,17 @@ static int fib_release(struct inode *inode, struct file *file)
     return 0;
 }
 
+static ktime_t kt;
 /* calculate the fibonacci number at given offset */
 static ssize_t fib_read(struct file *file,
                         char *buf,
                         size_t size,
                         loff_t *offset)
 {
-    return (ssize_t) fib_sequence(*offset, buf);
+    kt = ktime_get();
+    long int res = fib_sequence(*offset, buf);
+    kt = ktime_sub(ktime_get(), kt);
+    return (ssize_t) res;
 }
 
 /* write operation is skipped */
@@ -77,7 +82,7 @@ static ssize_t fib_write(struct file *file,
                          size_t size,
                          loff_t *offset)
 {
-    return 1;
+    return (ssize_t) ktime_to_ns(kt);
 }
 
 static loff_t fib_device_lseek(struct file *file, loff_t offset, int orig)
