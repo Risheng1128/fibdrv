@@ -17,7 +17,7 @@ long long elapse(struct timespec *start, struct timespec *end)
 int main()
 {
     char buf[256];
-    int offset = 100; /* TODO: try test something bigger than the limit */
+    int offset = 1000; /* TODO: try test something bigger than the limit */
 
     int fd = open(FIB_DEV, O_RDWR);
     if (fd < 0) {
@@ -25,6 +25,7 @@ int main()
         exit(1);
     }
 
+    // Measure time
     struct timespec start, end;
     for (int i = 0; i < offset; i++) {
         lseek(fd, i, SEEK_SET);
@@ -35,6 +36,13 @@ int main()
         printf("%lld %ld %lld\n", elapse(&start, &end), ktime,
                elapse(&start, &end) - ktime);
     }
+
+    // Observe the number of fibnacci
+    // for (int i = 0; i <= offset; i++) {
+    //     lseek(fd, i, SEEK_SET);
+    //     read(fd, buf, 256);
+    //     printf("%d %s\n", i, buf);
+    // }
 
     close(fd);
     return 0;
