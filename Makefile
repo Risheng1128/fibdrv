@@ -33,17 +33,22 @@ PASS_COLOR = \e[32;01m
 NO_COLOR = \e[0m
 pass = $(PRINTF) "$(PASS_COLOR)$1 Passed [-]$(NO_COLOR)\n"
 
-plot: all
-	$(MAKE) unload
-	$(MAKE) load
-	@python3 eliminate.py
-	gnuplot time.gp
-	$(MAKE) unload
-
-check: all
+run:
 	$(MAKE) unload
 	$(MAKE) load
 	sudo ./client > out
 	$(MAKE) unload
+
+check: all run
 	@diff -u out scripts/fibnacci500.txt && $(call pass)
 	@scripts/verify.py
+
+splot: all run
+	gnuplot stime.gp
+
+plot: all
+	$(MAKE) unload
+	$(MAKE) load
+	@python3 eliminate.py
+	$(MAKE) unload
+	gnuplot time.gp
