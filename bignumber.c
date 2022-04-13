@@ -10,12 +10,10 @@
  */
 long int str_size(char *str)
 {
-    int size = 0;
-    if (!str)
-        return 0;
-    while (*str++)
-        size++;
-    return size;
+    char *cpy = str;
+    for (; *cpy != '\0'; ++cpy)
+        ;
+    return (long int) (cpy - str);
 }
 
 /**
