@@ -1,5 +1,6 @@
 CONFIG_MODULE_SIG = n
 TARGET_MODULE := fibdrv
+COMPILER := $(shell cat /proc/version | awk '{print $$5}' | sed 's/^.//')
 
 obj-m := $(TARGET_MODULE).o
 ccflags-y := -std=gnu99 -Wno-declaration-after-statement
@@ -10,7 +11,7 @@ PWD := $(shell pwd)
 GIT_HOOKS := .git/hooks/applied
 
 all: $(GIT_HOOKS) client
-	$(MAKE) -C $(KDIR) M=$(PWD) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) CC=$(COMPILER) modules
 
 $(GIT_HOOKS):
 	@scripts/install-git-hooks
